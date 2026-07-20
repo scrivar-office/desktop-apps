@@ -36,18 +36,21 @@ retint() {
   ' "$1"
 }
 for f in apps/common/main/resources/less/colors-table*.less \
-         apps/*/main/index*.html \
+         apps/*/main/index*.html apps/*/main/index*.html.deploy \
          apps/spreadsheeteditor/main/resources/less/toolbar.less; do
+  [ -f "$f" ] || continue
   retint "$f"
 done
 
 echo "[2/5] splash loader dots -> Scrivar triad"
-for f in apps/*/main/index_loader.html; do
+for f in apps/*/main/index_loader.html apps/*/main/index_loader.html.deploy; do
+  [ -f "$f" ] || continue
   perl -pi -e 's/#55bce6/#4F46E5/gi; s/#a1cb5c/#10B981/gi; s/#de7a59/#F59E0B/gi;' "$f"
 done
 
 echo "[3/5] <title> product-name sweep"
-for f in apps/*/main/index*.html apps/*/forms/index*.html; do
+for f in apps/*/main/index*.html apps/*/main/index*.html.deploy \
+         apps/*/forms/index*.html apps/*/forms/index*.html.deploy; do
   [ -f "$f" ] || continue
   perl -pi -e '
     s/<title>([^<]*)ONLYOFFICE Documents([^<]*)<\/title>/<title>${1}Scrivar Office$2<\/title>/;
@@ -73,7 +76,8 @@ perl -pi -e "
 " build/Gruntfile.js
 
 echo "[5/5] onlyoffice.com hrefs in editor html"
-for f in apps/*/main/index*.html apps/*/forms/index*.html; do
+for f in apps/*/main/index*.html apps/*/main/index*.html.deploy \
+         apps/*/forms/index*.html apps/*/forms/index*.html.deploy; do
   [ -f "$f" ] || continue
   perl -pi -e 's/(href=")https?:\/\/(www\.)?onlyoffice\.com\/?(")/${1}https:\/\/www.scrivar.com\/$3/g' "$f"
 done
