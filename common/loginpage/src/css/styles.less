@@ -2884,3 +2884,41 @@ li.menu-item {
     }
   }
 }
+
+// === SCRIVAR-REBRAND begin: Navy-rail start-page sidebar (P1 design "Navy rail") ===
+// Deep-navy gradient rail, constant across app themes (brand element).
+// Content column stays on the active theme. Scoped overrides only — the rail
+// consumes the same CSS variables the themes define, re-pointed underneath.
+.main-column.col-left.tool-menu {
+  background: linear-gradient(180deg, #1B1464 0%, #312E81 100%);
+
+  --text-normal: rgba(255, 255, 255, 0.92);
+  --text-normal-pressed: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
+  --icon-normal: #ffffff;
+  --background-icon-normal: rgba(255, 255, 255, 0.10);
+
+  --highlight-button-hover: rgba(255, 255, 255, 0.08);
+  --highlight-button-pressed: rgba(255, 255, 255, 0.14);
+  --highlight-button-pressed-hover: rgba(255, 255, 255, 0.18);
+  --highlight-sidebar-item-pressed: rgba(255, 255, 255, 0.16);
+  --border-sidebar-item: transparent;
+  --shadow-sidebar-item-pressed: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --action-active-font-weight: 500;
+
+  --background-scroll-thumb: rgba(255, 255, 255, 0.25);
+  --highlight-scroll-thumb-hover: rgba(255, 255, 255, 0.40);
+  --highlight-scroll-track-hover: rgba(255, 255, 255, 0.06);
+
+  // seam against the light content column
+  --border-sidebar: transparent;
+  --border-tabbar: transparent;
+  // portal (cloud connection) icon frames on the rail
+  --border-sidebar-icon: rgba(255, 255, 255, 0.25);
+
+  > li.menu-item.separator {
+    border-bottom-color: rgba(255, 255, 255, 0.16);
+  }
+}
+// === SCRIVAR-REBRAND end: Navy-rail start-page sidebar ===
