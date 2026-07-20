@@ -56,8 +56,8 @@
  *       title: 'Word Document',
  *       formatLabel: {
  *         value: 'DOCX',
- *         gradientColorStart: '#4298C5',
- *         gradientColorEnd: '#2D84B2'
+ *         gradientColorStart: '#6366F1',
+ *         gradientColorEnd: '#4F46E5'
  *       },
  *       icon: '#docx-big'
  *     }
