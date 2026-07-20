@@ -22,5 +22,10 @@ sweep() {
 
 for f in locale/*.js src/locale.js; do sweep "$f"; done
 
+# Entry-page <title> tags (never rendered inside the CEF start page, but keep
+# the shipped tree clean of the upstream product name).
+perl -pi -e 's/<title>[^<]*ONLYOFFICE[^<]*<\/title>/<title>Scrivar Office<\/title>/' src/index.html
+perl -pi -e 's/<title>[^<]*ONLYOFFICE[^<]*<\/title>/<title>Scrivar Office error<\/title>/' noconnect/index.html
+
 echo "Loginpage locale sweep done. Remaining ONLYOFFICE in translatable strings:"
 grep -o "wel[A-Za-z]*: *'[^']*ONLYOFFICE[^']*'" locale/*.js src/locale.js | wc -l | xargs echo "  welcome-key hits left:"
