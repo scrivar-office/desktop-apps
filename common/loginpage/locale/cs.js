@@ -56,7 +56,7 @@ l10n.cs = {
     actOpenLocal: 'Otevřít soubor',
     actConnectTo: 'Připojte se k cloudu',
     actActivate: 'Aktivovat',
-    actAbout: 'O ONLYOFFICE',
+    actAbout: 'O Scrivar Office',
     actSettings: 'Nastavení',
     actTemplates: 'Šablony',
     licKeyHolder: 'vstupní aktivační klíč',

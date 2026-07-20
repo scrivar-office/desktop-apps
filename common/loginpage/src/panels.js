@@ -144,7 +144,7 @@ $(document).ready(function() {
         CommonEvents.fire("portal:create");
     });
 
-    if (!window.config.portals.checklist) {
+    if (!window.config.portals.checklist || !window.config.portals.checklist.length) { /* SCRIVAR-REBRAND (P3): sortProviders() returns [] (truthy) — an EMPTY provider checklist must hide the Clouds surface too */
         $('.tools-connect').hide();
         hideAction('connect');
         console.log('There are no cloud providers');

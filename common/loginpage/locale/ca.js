@@ -45,7 +45,7 @@ l10n.ca = {
     pshPass: 'contrasenya',
     pshPhone: 'número de telèfon',
     pshCode: 'codi del missatge de text',
-    loginNoteAssignPhone: 'L\'autenticació de dos factors està habilitada per proporcionar seguretat addicional al núvol de ONLYOFFICE. Introduïu el número de telèfon mòbil per continuar treballant a l\'oficina del núvol. Cal introduir el número de telèfon mòbil mitjançant un format internacional amb codi de país.',
+    loginNoteAssignPhone: 'L\'autenticació de dos factors està habilitada per proporcionar seguretat addicional al núvol de Scrivar. Introduïu el número de telèfon mòbil per continuar treballant a l\'oficina del núvol. Cal introduir el número de telèfon mòbil mitjançant un format internacional amb codi de país.',
     loginNoteApplyCode: 'L\'autenticació de dos factors està habilitada. El codi ha estat enviat per missatge de text al número $1',
     newDoc: 'Document',
     newXlsx: 'Full de càlcul',

@@ -14,10 +14,27 @@ sweep() {
     -e 's/ONLYOFFICE Desktop Editors/Scrivar Office/g' \
     -e 's/ONLYOFFICE Documents/Scrivar Office/g' \
     "$1"
+  # Cloud-identity strings (P3): the cloud surface is Scrivar Cloud (the
+  # launcher-side sync folder), not a portal. Replace the upstream cloud
+  # service name + language-specific cloud phrasings BEFORE the generic
+  # product-name rule so they don't collapse to "Scrivar Office".
+  sed -i '' \
+    -e 's/ONLYOFFICE Cloud Service/Scrivar Cloud/g' \
+    -e 's/en ligne avec ONLYOFFICE/en ligne avec Scrivar Cloud/g' \
+    -e 's/de ONLYOFFICE cloud/de Scrivar Cloud/g' \
+    -e 's/del ONLYOFFICE cloud/del Scrivar Cloud/g' \
+    -e 's/núvol de ONLYOFFICE/núvol de Scrivar/g' \
+    -e 's/Connect to cloud office/Connect to Scrivar Cloud/g' \
+    -e 's/Connect to cloud/Scrivar Cloud/g' \
+    "$1"
   # Remaining standalone product-name mentions in translatable STRING VALUES.
   # Restrict to the l10n string keys so we never rewrite code identifiers or
   # the info@onlyoffice.com contact in the header comment.
-  perl -0pi -e "s/(wel\w+|text\w+|btn\w+|link\w+|portal\w+|login\w+|empty\w+):(\s*)'([^']*?)ONLYOFFICE([^']*?)'/\$1:\$2'\$3Scrivar Office\$4'/g" "$1"
+  # NOTE (P3 fix): the value part must tolerate escaped apostrophes (\')
+  # inside single-quoted strings — a plain [^']* stopped at the backslash
+  # escape and let "Don\'t … ONLYOFFICE Cloud Service …" survive the P1
+  # sweep. (?:[^'\\]|\\.) walks over escape sequences correctly.
+  perl -0pi -e "s/(wel\w+|text\w+|btn\w+|link\w+|portal\w+|login\w+|empty\w+|act\w+):(\s*)'((?:[^'\\\\]|\\\\.)*?)ONLYOFFICE((?:[^'\\\\]|\\\\.)*?)'/\$1:\$2'\$3Scrivar Office\$4'/g" "$1"
 }
 
 for f in locale/*.js src/locale.js; do sweep "$f"; done
@@ -55,3 +72,8 @@ perl -pi -e 's/<title>[^<]*ONLYOFFICE[^<]*<\/title>/<title>Scrivar Office error<
 
 echo "Loginpage locale sweep done. Remaining ONLYOFFICE in translatable strings:"
 (grep -o "wel[A-Za-z]*: *'[^']*ONLYOFFICE[^']*'" locale/*.js src/locale.js || true) | wc -l | xargs echo "  welcome-key hits left:"
+(grep -o "ONLYOFFICE Cloud Service\|Connect to cloud" locale/*.js src/locale.js || true) | wc -l | xargs echo "  cloud-identity hits left (must be 0):"
+# Full residual audit — expected leftovers are ONLY the AGPL "Based on
+# ONLYOFFICE" credit in panelabout.js and the commented example in sdk.js.
+echo "  full residual list (locale values only should be empty):"
+grep -rn "ONLYOFFICE" locale/ src/locale.js || echo "    (clean)"

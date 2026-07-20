@@ -98,6 +98,9 @@
             this.view.tplPage = this.view.tplPage.replace(/<imagewelcome>/, img);
             this.view.render();
 
+            /* SCRIVAR-REBRAND (P3): Scrivar Office has no cloud portals — hide the cloud-connect advert */
+            $('.tools-connect', this.view.$panel).hide();
+
             if ( utils.isWinXp ) {
                 $('h4.text-description, .tools-connect', this.view.$panel).hide();
             }

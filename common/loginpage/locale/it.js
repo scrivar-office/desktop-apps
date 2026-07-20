@@ -47,7 +47,7 @@ l10n.it_IT = {
     pshPass: 'password',
     pshPhone: 'numero di telefono',
     pshCode: 'codice dal messaggio di testo',
-    loginNoteAssignPhone: 'L\'autenticazione a due fattori è abilitata per fornire ulteriore sicurezza del ONLYOFFICE cloud. Inserisci il tuo numero di cellulare per continuare a lavorare sul ufficio cloud. Il numero di cellulare deve essere inserito utilizzando un formato internazionale con prefisso internazionale.',
+    loginNoteAssignPhone: 'L\'autenticazione a due fattori è abilitata per fornire ulteriore sicurezza del Scrivar Cloud. Inserisci il tuo numero di cellulare per continuare a lavorare sul ufficio cloud. Il numero di cellulare deve essere inserito utilizzando un formato internazionale con prefisso internazionale.',
     loginNoteApplyCode: 'L\'autenticazione a due fattori è abilitata. Il codice è stato inviato al numero $1.',
     newDoc: 'Documento',
     newXlsx: 'Foglio di calcolo',
