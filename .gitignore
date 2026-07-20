@@ -55,3 +55,8 @@ macos/fastlane/node_modules
 macos/fastlane/README.md
 macos/fastlane/report.xml
 macos/Vendor/ONLYOFFICE
+
+# Build output (never commit — 150MB+ CEF framework)
+macos/DerivedData/
+common/loginpage/src/css/toolicons*.less
+common/loginpage/src/dialogconnect.min.js

@@ -97,6 +97,36 @@
         }
     }
 
+    // --- SCRIVAR-REBRAND: AGPL "based on" credit + source links (additive; keep across rebases) ---
+    {
+        NSTextField * creditField = [NSTextField labelWithString:
+            @"Based on ONLYOFFICE® Desktop Editors — modified by Scrivar.\nLicensed under the GNU AGPL v3."];
+        [creditField setFont:[NSFont systemFontOfSize:11]];
+        [creditField setTextColor:[NSColor secondaryLabelColor]];
+        [creditField setAlignment:NSTextAlignmentCenter];
+        [creditField setLineBreakMode:NSLineBreakByWordWrapping];
+        [creditField setUsesSingleLineMode:NO];
+        [creditField setMaximumNumberOfLines:0];
+        [self.infoStackView addArrangedSubview:creditField];
+
+        NSButton * srcButton = [NSButton buttonWithTitle:NSLocalizedString(@"Source code", nil)
+                                                  target:self action:@selector(onScrivarSourceClick:)];
+        NSButton * upButton = [NSButton buttonWithTitle:NSLocalizedString(@"Upstream project", nil)
+                                                 target:self action:@selector(onScrivarUpstreamClick:)];
+        for (NSButton * linkButton in @[srcButton, upButton]) {
+            [linkButton setBordered:NO];
+            NSMutableAttributedString * linkTitle = [[NSMutableAttributedString alloc] initWithAttributedString:[linkButton attributedTitle]];
+            NSRange linkRange = NSMakeRange(0, [linkTitle length]);
+            [linkTitle addAttribute:NSForegroundColorAttributeName value:[NSColor linkColor] range:linkRange];
+            [linkTitle fixAttributesInRange:linkRange];
+            [linkButton setAttributedTitle:linkTitle];
+        }
+        NSStackView * linkRow = [NSStackView stackViewWithViews:@[srcButton, upButton]];
+        [linkRow setSpacing:14];
+        [self.infoStackView addArrangedSubview:linkRow];
+    }
+    // --- /SCRIVAR-REBRAND ---
+
     NSURL * eulaUrl = [[NSBundle mainBundle] URLForResource:@"EULA" withExtension:@"html" subdirectory:@"license"];
     isCommercialVersion = eulaUrl != nil;
 
@@ -148,6 +178,16 @@
     
     [NSApp stopModal];
 }
+
+// --- SCRIVAR-REBRAND: source link actions ---
+- (void)onScrivarSourceClick:(id)sender {
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/scrivar-office"]];
+}
+
+- (void)onScrivarUpstreamClick:(id)sender {
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/ONLYOFFICE/desktop-apps"]];
+}
+// --- /SCRIVAR-REBRAND ---
 
 - (void)onVersionClick:(NSTextField *)sender {
     NSDictionary * infoDictionary = [[NSBundle mainBundle] infoDictionary];

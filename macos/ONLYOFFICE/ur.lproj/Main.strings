@@ -7,7 +7,7 @@
 /* Class = "NSMenuItem"; title = "Customize Toolbar…"; ObjectID = "1UK-8n-QPP"; */
 "1UK-8n-QPP.title" = "ٹول بار کو حسب ضرورت بنائیں…";
 
-/* Class = "NSMenuItem"; title = "ONLYOFFICE"; ObjectID = "1Xt-HY-uBw"; */
+/* Class = "NSMenuItem"; title = "Scrivar Office"; ObjectID = "1Xt-HY-uBw"; */
 "1Xt-HY-uBw.title" = "صرف آفس";
 
 /* Class = "NSMenuItem"; title = "Raise"; ObjectID = "2h7-ER-AoG"; */
@@ -31,11 +31,11 @@
 /* Class = "NSMenuItem"; title = "License Agreement"; ObjectID = "4et-TX-a4m"; */
 "4et-TX-a4m.title" = "لائسنس کا معاہدہ";
 
-/* Class = "NSMenuItem"; title = "Quit ONLYOFFICE"; ObjectID = "4sb-4s-VLi"; */
-"4sb-4s-VLi.title" = "ONLYOFFICE چھوڑ دیں۔";
+/* Class = "NSMenuItem"; title = "Quit Scrivar Office"; ObjectID = "4sb-4s-VLi"; */
+"4sb-4s-VLi.title" = "Scrivar Office چھوڑ دیں۔";
 
-/* Class = "NSMenuItem"; title = "About ONLYOFFICE"; ObjectID = "5kV-Vb-QxS"; */
-"5kV-Vb-QxS.title" = "ONLYOFFICE کے بارے میں";
+/* Class = "NSMenuItem"; title = "About Scrivar Office"; ObjectID = "5kV-Vb-QxS"; */
+"5kV-Vb-QxS.title" = "Scrivar Office کے بارے میں";
 
 /* Class = "NSMenuItem"; title = "Edit"; ObjectID = "5QF-Oa-p0T"; */
 "5QF-Oa-p0T.title" = "ترمیم کریں۔";
@@ -214,7 +214,7 @@
 /* Class = "NSMenu"; title = "Baseline"; ObjectID = "ijk-EB-dga"; */
 "ijk-EB-dga.title" = "بیس لائن";
 
-/* Class = "NSWindow"; title = "ONLYOFFICE"; ObjectID = "IQv-IB-iLA"; */
+/* Class = "NSWindow"; title = "Scrivar Office"; ObjectID = "IQv-IB-iLA"; */
 "IQv-IB-iLA.title" = "صرف آفس";
 
 /* Class = "NSMenuItem"; title = "Justify"; ObjectID = "J5U-5w-g23"; */
@@ -235,7 +235,7 @@
 /* Class = "NSMenuItem"; title = "Revert to Saved"; ObjectID = "KaW-ft-85H"; */
 "KaW-ft-85H.title" = "محفوظ پر واپس جائیں۔";
 
-/* Class = "NSTabViewItem"; label = "ONLYOFFICE"; ObjectID = "kcg-El-49G"; */
+/* Class = "NSTabViewItem"; label = "Scrivar Office"; ObjectID = "kcg-El-49G"; */
 "kcg-El-49G.label" = "صرف آفس";
 
 /* Class = "NSMenuItem"; title = "Show All"; ObjectID = "Kd2-mp-pUS"; */
@@ -277,8 +277,8 @@
 /* Class = "NSMenuItem"; title = "Loosen"; ObjectID = "ogc-rX-tC1"; */
 "ogc-rX-tC1.title" = "ڈھیلا کرنا";
 
-/* Class = "NSMenuItem"; title = "Hide ONLYOFFICE"; ObjectID = "Olw-nP-bQN"; */
-"Olw-nP-bQN.title" = "ONLYOFFICE چھپائیں۔";
+/* Class = "NSMenuItem"; title = "Hide Scrivar Office"; ObjectID = "Olw-nP-bQN"; */
+"Olw-nP-bQN.title" = "Scrivar Office چھپائیں۔";
 
 /* Class = "NSMenuItem"; title = "Find Previous"; ObjectID = "OwM-mh-QMV"; */
 "OwM-mh-QMV.title" = "پچھلا تلاش کریں۔";
@@ -364,7 +364,7 @@
 /* Class = "NSMenuItem"; title = "Capitalize"; ObjectID = "UEZ-Bs-lqG"; */
 "UEZ-Bs-lqG.title" = "کیپٹلائز کریں۔";
 
-/* Class = "NSMenu"; title = "ONLYOFFICE"; ObjectID = "uQy-DD-JDr"; */
+/* Class = "NSMenu"; title = "Scrivar Office"; ObjectID = "uQy-DD-JDr"; */
 "uQy-DD-JDr.title" = "صرف آفس";
 
 /* Class = "NSMenuItem"; title = "Cut"; ObjectID = "uRl-iY-unG"; */
