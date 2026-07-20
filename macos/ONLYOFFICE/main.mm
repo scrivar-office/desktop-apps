@@ -61,9 +61,35 @@ CAscApplicationManager * createASCApplicationManager() {
     return new ASCApplicationManager();
 }
 
+// SCRIVAR-REBRAND: launched-by gate. The Scrivar Office launcher (a separate
+// program) starts this suite with --launched-by=… and SCRIVAR_LAUNCHER=1 in
+// the environment. When neither marker is present (the suite binary was
+// opened directly), show a pointer to the launcher and exit. The env marker
+// is what survives self-relaunches (LetsMove/updater) — children inherit it.
+static bool scrivar_launched_by_launcher(int argc, const char * argv[]) {
+    if (getenv("SCRIVAR_LAUNCHER") != NULL) return true;
+    for (int i = 1; i < argc; i++) {
+        if (strncmp(argv[i], "--launched-by=", 14) == 0) return true;
+    }
+    return false;
+}
+
 int main(int argc, const char * argv[]) {
 //    return NSApplicationMain(argc, argv);
-    
+
+    // SCRIVAR-REBRAND: see scrivar_launched_by_launcher above.
+    if (!scrivar_launched_by_launcher(argc, argv)) {
+        @autoreleasepool {
+            [NSApplication sharedApplication];
+            NSAlert * alert = [[NSAlert alloc] init];
+            [alert setMessageText:@"Please start Scrivar Office normally"];
+            [alert setInformativeText:@"Open the Scrivar Office app from your Applications folder — it checks your license and starts the editors for you."];
+            [alert addButtonWithTitle:@"OK"];
+            [alert runModal];
+        }
+        return 0;
+    }
+
     [ASCHelper createCloudPath];
     [ASCLinguist init];
 
