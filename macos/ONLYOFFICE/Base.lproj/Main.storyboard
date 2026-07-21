@@ -22,11 +22,9 @@
                                                 <action selector="onMenuAbout:" target="Voe-Tx-rLC" id="xuH-Yz-ETx"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Check for Updates…" keyEquivalent="u" id="ud7-wC-A79">
-                                            <connections>
-                                                <action selector="checkForUpdates:" target="mg6-13-ksd" id="Whs-l9-OTO"/>
-                                            </connections>
-                                        </menuItem>
+                                        <!-- SCRIVAR-REBRAND (P4): "Check for Updates…" removed — updates are
+                                             owned by the Scrivar Office launcher (a separate program); the
+                                             in-suite Sparkle feed is disabled in Info.plist. -->
                                         <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
                                         <menuItem title="Preferences…" keyEquivalent="," id="BOF-NM-1cW">
                                             <connections>

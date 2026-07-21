@@ -649,17 +649,6 @@
 	<string>1.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>scrivar-office</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleVersion</key>
 	<string>104</string>
 	<key>LSApplicationCategoryType</key>
@@ -685,12 +674,8 @@
 	<string>Once Scrivar Office has permission, document tabs will be able to ask you for access.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>SUFeedURL</key>
-	<string>https://download.scrivar.com/office/mac/arm/appcast.xml</string>
-	<key>SUPublicEDKey</key>
-	<string>pjO5Yt/CT04vyk5CpBZ43mAblnS2boxm+WsPI3oCGUQ=</string>
-	<key>SUScheduledCheckInterval</key>
-	<integer>86400</integer>
+	<key>SUEnableAutomaticChecks</key>
+	<false/>
 	<key>UIDesignRequiresCompatibility</key>
 	<true/>
 </dict>

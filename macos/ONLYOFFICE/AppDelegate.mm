@@ -96,7 +96,12 @@
     [self updateAppAppearance];
     
 #ifndef _MAS
-    PFMoveToApplicationsFolderIfNecessary();
+    // SCRIVAR-REBRAND: the Scrivar Office launcher nests this app inside its
+    // own bundle (Contents/Resources/suite/) — self-relocation must never rip
+    // the nested copy out of the launcher. Skip LetsMove when launcher-spawned.
+    if (!getenv("SCRIVAR_LAUNCHER")) {
+        PFMoveToApplicationsFolderIfNecessary();
+    }
 #endif
     
     // Remove 'Start Dictation' and 'Special Characters' from menu
