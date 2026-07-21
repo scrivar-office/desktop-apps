@@ -147,6 +147,7 @@ $(document).ready(function() {
     if (!window.config.portals.checklist || !window.config.portals.checklist.length) { /* SCRIVAR-REBRAND (P3): sortProviders() returns [] (truthy) — an EMPTY provider checklist must hide the Clouds surface too */
         $('.tools-connect').hide();
         hideAction('connect');
+        $('#idx-sidebar-portals').hide(); /* SCRIVAR-REBRAND (P3): the Clouds sidebar section (header + "+" button) is its own block — hiding the advert/action alone leaves an empty "Clouds +" rail entry */
         console.log('There are no cloud providers');
     }
 
