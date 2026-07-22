@@ -144,4 +144,114 @@ cat > preinstall.json <<'JSON'
 JSON
 
 python3 -c "import json; json.load(open('preinstall.json')); print('preinstall.json: valid JSON')"
+
+# --- 4. settings.js: LOCK provider management -------------------------------
+# Scrivar Cloud & AI is the ONLY provider. Remove the two UI entry points that
+# let a user add/edit/delete providers or models from the "AI configuration"
+# dialog: (a) the "Add AI Model" pseudo-entry appended to every per-task
+# dropdown, and (b) the "Edit AI models" link (which opens the models-list /
+# add-edit / custom-providers windows). After seeding, only the "Scrivar AI"
+# model exists, so each per-task dropdown becomes a single fixed choice.
+python3 - <<'PY'
+p = 'scripts/settings.js'
+s = open(p).read()
+if 'SCRIVAR-LOCK' in s:
+    print('settings.js: already locked')
+else:
+    changed = False
+
+    # (a) Drop the separator + "Add AI Model" entry from the dropdown options.
+    add_block = """		options.push(
+			{
+				text: '-',
+				children: []
+			},
+			{
+				id: 'add',
+				text: window.Asc.plugin.tr("Add AI Model"),
+				handler: function() {
+					window.Asc.plugin.sendToPlugin("onOpenAddModal");
+				}
+			}
+		);
+"""
+    if add_block not in s:
+        raise SystemExit('ERROR: settings.js anchor (Add AI Model options.push block) not found')
+    s = s.replace(add_block,
+        "		/* SCRIVAR-LOCK: Scrivar AI is the only provider — no \"Add AI Model\" entry. */\n",
+        1)
+    changed = True
+
+    # (b) Neutralise the "Edit AI models" link: never wire the click, and hide it.
+    edit_anchor = """	$('#edit-ai-models label').click(function(e) {
+		window.Asc.plugin.sendToPlugin("onOpenAiModelsModal");
+	});
+"""
+    if edit_anchor not in s:
+        raise SystemExit('ERROR: settings.js anchor (#edit-ai-models click) not found')
+    s = s.replace(edit_anchor,
+        "	/* SCRIVAR-LOCK: hide the \"Edit AI models\" link — provider/model set is fixed. */\n"
+        "	$('#edit-ai-models').hide();\n",
+        1)
+    changed = True
+
+    if changed:
+        open(p, 'w').write(s)
+        print('settings.js: provider-management UI removed (Add AI Model + Edit AI models)')
+PY
+grep -q 'SCRIVAR-LOCK' scripts/settings.js || { echo "ERROR: settings.js lock failed"; exit 1; }
+
+# --- 5. code.js: hard backstop for the mutation windows --------------------
+# Defence in depth: even if a crafted sendToPlugin reached them, the windows
+# that add/edit/delete providers or models must never open.
+python3 - <<'PY'
+p = 'scripts/code.js'
+s = open(p).read()
+if 'SCRIVAR-LOCK' in s:
+    print('code.js: already locked')
+else:
+    guards = [
+        ('function onOpenAiModelsModal() {\n',
+         'function onOpenAiModelsModal() {\n\treturn; /* SCRIVAR-LOCK: AI models list (add/edit/delete) disabled */\n'),
+        ('function onOpenEditModal(data) {\n',
+         'function onOpenEditModal(data) {\n\treturn; /* SCRIVAR-LOCK: add/edit model window disabled */\n'),
+        ('function onOpenCustomProvidersModal() {\n',
+         'function onOpenCustomProvidersModal() {\n\treturn; /* SCRIVAR-LOCK: custom-providers window disabled */\n'),
+    ]
+    for anchor, repl in guards:
+        if anchor not in s:
+            raise SystemExit('ERROR: code.js anchor not found: ' + anchor.strip())
+        s = s.replace(anchor, repl, 1)
+    open(p, 'w').write(s)
+    print('code.js: mutation-window openers guarded (models list / add-edit / custom providers)')
+PY
+grep -q 'SCRIVAR-LOCK' scripts/code.js || { echo "ERROR: code.js lock failed"; exit 1; }
+
+# --- 6. local_storage.js: no-op the model mutators -------------------------
+# Final backstop at the storage layer so nothing (UI or engine) can grow the
+# provider/model set. The preinstall seeder writes localStorage directly (not
+# via addModel), so it is unaffected.
+python3 - <<'PY'
+p = 'scripts/engine/local_storage.js'
+s = open(p).read()
+if 'SCRIVAR-LOCK' in s:
+    print('local_storage.js: already locked')
+else:
+    changed = False
+    for name, anchor in [
+        ('addModel',    '\tAI.Storage.addModel = function(model) {\n'),
+        ('removeModel',  '\tAI.Storage.removeModel = function(modelId) {\n'),
+    ]:
+        if anchor in s:
+            s = s.replace(anchor,
+                anchor + '\t\treturn; /* SCRIVAR-LOCK: provider/model set is fixed to Scrivar AI */\n',
+                1)
+            changed = True
+        else:
+            print('local_storage.js: NOTE anchor for %s not found (skipped)' % name)
+    if changed:
+        open(p, 'w').write(s)
+        print('local_storage.js: model mutators no-oped')
+PY
+
 echo "patch-ai-plugin done."

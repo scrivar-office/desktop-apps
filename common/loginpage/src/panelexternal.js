@@ -94,6 +94,13 @@
                 panel_url = opts.url,
                 panel_id = opts.id;
 
+            /* SCRIVAR-REBRAND: hide AI agent — Scrivar Cloud & AI is the only AI
+               surface; suppress the upstream start-page 'AI agent' plugin tab
+               (raw provider/MCP/web-search wiring). Skipping here removes the
+               sidebar item, its iframe panel, and the ?panel= deep-link route. */
+            if ( panel_id && panel_id.indexOf('9DC93CDB-B576-4F0C-B55E-FCC9C48DD777') !== -1 )
+                return;
+
             let _panel = new ViewCustomPanel({
                                 itemtext: item_name,
                                 l10n: {itemtext:opts.nameLocale},

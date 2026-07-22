@@ -58,5 +58,6 @@ macos/Vendor/ONLYOFFICE
 
 # Build output (never commit — 150MB+ CEF framework)
 macos/DerivedData/
+macos/DerivedData-x64/
 common/loginpage/src/css/toolicons*.less
 common/loginpage/src/dialogconnect.min.js
