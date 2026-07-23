@@ -254,4 +254,92 @@ else:
         print('local_storage.js: model mutators no-oped')
 PY
 
+# --- 7. chat.js: Subscribe-to-Cloud-&-AI CTA in the empty-state -------------
+# A non-subscriber sees an intuitive "Subscribe" card BEFORE sending anything.
+# Subscription state comes from the resident launcher's localhost /status (no
+# Scrivar API/token in the fork — the plugin already talks to 127.0.0.1:41317
+# for chat); the CTA opens the launcher manage window via the custom scheme.
+python3 - <<'PY'
+p = 'scripts/chat.js'
+s = open(p).read()
+if 'SCRIVAR-SUBSCRIBE' in s:
+    print('chat.js: already has subscribe CTA')
+else:
+    anchor = '\t\tdocument.getElementById("chat_wrapper").addEventListener("click", function(e) {\n'
+    if anchor not in s:
+        raise SystemExit('ERROR: chat.js chat_wrapper click anchor not found')
+    inject = (
+        "\t\t// SCRIVAR-SUBSCRIBE: when Cloud & AI is not active, show a Subscribe\n"
+        "\t\t// card in the empty-state. State from the resident launcher /status;\n"
+        "\t\t// the button opens the launcher manage window (AGPL: fork holds only\n"
+        "\t\t// the localhost URL + the custom scheme, no account/token logic).\n"
+        "\t\ttry {\n"
+        "\t\t\tfetch('http://127.0.0.1:41317/status').then(function(r){ return r.json(); }).then(function(st){\n"
+        "\t\t\t\tif (st && st.subscribed) return;\n"
+        "\t\t\t\tif (document.getElementById('scrivar-subscribe-cta')) return;\n"
+        "\t\t\t\tvar host = document.getElementById('start_panel') || document.getElementById('chat');\n"
+        "\t\t\t\tif (!host) return;\n"
+        "\t\t\t\tvar cta = document.createElement('div');\n"
+        "\t\t\t\tcta.id = 'scrivar-subscribe-cta';\n"
+        "\t\t\t\tcta.style.cssText = 'margin:10px 12px;padding:12px;border:1px solid var(--border-Regular,#e0e0e0);border-radius:8px;text-align:center;';\n"
+        "\t\t\t\tvar msg = document.createElement('div');\n"
+        "\t\t\t\tmsg.className = 'i18n';\n"
+        "\t\t\t\tmsg.style.cssText = 'font-size:13px;margin-bottom:8px;';\n"
+        "\t\t\t\tmsg.textContent = 'Cloud & AI is not active. Subscribe to use AI features.';\n"
+        "\t\t\t\tvar btn = document.createElement('button');\n"
+        "\t\t\t\tbtn.className = 'form-control btn-text-default i18n';\n"
+        "\t\t\t\tbtn.textContent = 'Subscribe to Cloud & AI';\n"
+        "\t\t\t\tbtn.addEventListener('click', function(){ window.open('scrivar-office://manage'); });\n"
+        "\t\t\t\tcta.appendChild(msg); cta.appendChild(btn);\n"
+        "\t\t\t\thost.insertBefore(cta, host.firstChild);\n"
+        "\t\t\t}).catch(function(){});\n"
+        "\t\t} catch (e) {}\n\n"
+    )
+    s = s.replace(anchor, inject + anchor, 1)
+    open(p, 'w').write(s)
+    print('chat.js: subscribe CTA added')
+PY
+grep -q 'SCRIVAR-SUBSCRIBE' scripts/chat.js || { echo "ERROR: chat.js subscribe CTA failed"; exit 1; }
+
+# --- 8. settings.js: Cloud & AI status row atop the AI configuration dialog -
+python3 - <<'PY'
+p = 'scripts/settings.js'
+s = open(p).read()
+if 'SCRIVAR-SUBSCRIBE' in s:
+    print('settings.js: already has status row')
+else:
+    anchor = "\t$('#edit-ai-models').hide();\n"
+    if anchor not in s:
+        raise SystemExit('ERROR: settings.js SCRIVAR-LOCK edit-ai-models anchor not found')
+    inject = (
+        "\n\t// SCRIVAR-SUBSCRIBE: Cloud & AI status row atop the dialog. State from\n"
+        "\t// the resident launcher /status; Subscribe opens the manage window.\n"
+        "\ttry {\n"
+        "\t\tfetch('http://127.0.0.1:41317/status').then(function(r){ return r.json(); }).then(function(st){\n"
+        "\t\t\tif (document.getElementById('scrivar-cloudai-row')) return;\n"
+        "\t\t\tvar row = document.createElement('div');\n"
+        "\t\t\trow.id = 'scrivar-cloudai-row';\n"
+        "\t\t\trow.style.cssText = 'margin-bottom:10px;font-size:13px;';\n"
+        "\t\t\tif (st && st.subscribed) {\n"
+        "\t\t\t\tvar b = document.createElement('b'); b.textContent = 'Cloud & AI';\n"
+        "\t\t\t\tvar a = document.createElement('span'); a.className = 'i18n'; a.textContent = ': Active';\n"
+        "\t\t\t\trow.appendChild(b); row.appendChild(a);\n"
+        "\t\t\t} else {\n"
+        "\t\t\t\tvar lbl = document.createElement('span'); lbl.className = 'i18n'; lbl.textContent = 'Cloud & AI is not active.';\n"
+        "\t\t\t\tvar btn = document.createElement('button'); btn.className = 'form-control btn-text-default i18n';\n"
+        "\t\t\t\tbtn.style.cssText = 'display:block;margin-top:6px;'; btn.textContent = 'Subscribe to Cloud & AI';\n"
+        "\t\t\t\tbtn.addEventListener('click', function(){ window.open('scrivar-office://manage'); });\n"
+        "\t\t\t\trow.appendChild(lbl); row.appendChild(btn);\n"
+        "\t\t\t}\n"
+        "\t\t\tvar desc = document.getElementById('description');\n"
+        "\t\t\tif (desc && desc.parentNode) desc.parentNode.insertBefore(row, desc);\n"
+        "\t\t}).catch(function(){});\n"
+        "\t} catch (e) {}\n"
+    )
+    s = s.replace(anchor, anchor + inject, 1)
+    open(p, 'w').write(s)
+    print('settings.js: Cloud & AI status row added')
+PY
+grep -q 'SCRIVAR-SUBSCRIBE' scripts/settings.js || { echo "ERROR: settings.js status row failed"; exit 1; }
+
 echo "patch-ai-plugin done."

@@ -71,6 +71,17 @@ $(document).ready(function() {
               <section id="idx-sidebar-portals" class="connect">
               </section>
               <li class="menu-item devider"></li>
+              <!-- SCRIVAR-REBRAND: Cloud & AI rail entry (opens the launcher manage window via scrivar-office://manage) -->
+              <li class="menu-item">
+                <a action="custom-cloudai">
+                    <div class="icon-box">
+                        <svg class="icon" data-iconname="aichat" data-precls="tool-icon">
+                            <use href="#aichat"></use>
+                        </svg>
+                    </div>
+                    <span class="text" l10n>${utils.Lang.actCloudAI}</span>
+                </a>
+              </li>
               <li class="menu-item">
                   <a action="settings">
                     <div class="icon-box">
@@ -97,6 +108,14 @@ $(document).ready(function() {
     $('#placeholder').html(_toolmenu_tpl);
 
     $('.tool-menu').on('click', '> .menu-item > a', onActionClick);
+    /* SCRIVAR-REBRAND: Cloud & AI rail — open the resident launcher's manage window.
+       window.open on a custom scheme is intercepted by CEF and handed to the OS
+       (LaunchServices) → the scrivar-office:// handler (the launcher). No account/
+       token/billing logic in the fork — just this URL. */
+    $('.tool-menu').on('click', '> .menu-item > a[action="custom-cloudai"]', function(e) {
+        e.preventDefault();
+        window.open('scrivar-office://manage');
+    });
     // $('.tool-quick-menu .menu-item a').click(onNewFileClick);
 
     if ( window.utils.isWinXp ) {
