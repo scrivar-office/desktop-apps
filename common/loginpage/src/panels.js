@@ -82,6 +82,17 @@ $(document).ready(function() {
                     <span class="text" l10n>${utils.Lang.actCloudAI}</span>
                 </a>
               </li>
+              <!-- SCRIVAR-REBRAND: Help & contact rail entry (opens the launcher support form via scrivar-office://support) -->
+              <li class="menu-item">
+                <a action="custom-support">
+                    <div class="icon-box">
+                        <svg class="icon" data-iconname="about" data-precls="tool-icon">
+                            <use href="#about"></use>
+                        </svg>
+                    </div>
+                    <span class="text" l10n>${utils.Lang.actHelpContact}</span>
+                </a>
+              </li>
               <li class="menu-item">
                   <a action="settings">
                     <div class="icon-box">
@@ -108,6 +119,14 @@ $(document).ready(function() {
     $('#placeholder').html(_toolmenu_tpl);
 
     $('.tool-menu').on('click', '> .menu-item > a', onActionClick);
+    /* SCRIVAR-REBRAND: Help & contact rail — open the resident launcher's support
+       form. window.open on a custom scheme is intercepted by CEF and handed to the
+       OS (LaunchServices) → the scrivar-office:// handler (the launcher). No
+       account/ticket/endpoint logic in the fork — just this URL. */
+    $('.tool-menu').on('click', '> .menu-item > a[action="custom-support"]', function(e) {
+        e.preventDefault();
+        window.open('scrivar-office://support');
+    });
     /* SCRIVAR-REBRAND: Cloud & AI rail — open the resident launcher's manage window.
        window.open on a custom scheme is intercepted by CEF and handed to the OS
        (LaunchServices) → the scrivar-office:// handler (the launcher). No account/

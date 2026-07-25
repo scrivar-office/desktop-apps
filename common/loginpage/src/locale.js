@@ -96,6 +96,7 @@ l10n.en = {
     actActivate: 'Activate',
     actAbout: 'About',
     actSettings: 'Settings',
+    actHelpContact: 'Help & contact', /* SCRIVAR-REBRAND */
     actCloudAI: 'Cloud & AI', /* SCRIVAR-REBRAND */
     actTemplates: 'Templates',
     actPreviewTemplates: 'Template',
