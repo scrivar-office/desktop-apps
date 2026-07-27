@@ -96,6 +96,13 @@ l10n.en = {
     actActivate: 'Activate',
     actAbout: 'About',
     actSettings: 'Settings',
+    updVersion: 'Version', /* SCRIVAR-REBRAND */
+    updChecking: 'Checking…', /* SCRIVAR-REBRAND */
+    updUpdateTo: 'Update to', /* SCRIVAR-REBRAND */
+    updDownloading: 'Downloading', /* SCRIVAR-REBRAND */
+    updRestart: 'Restart to update', /* SCRIVAR-REBRAND */
+    updFailed: 'Update failed — retry', /* SCRIVAR-REBRAND */
+    updUpToDate: 'Up to date', /* SCRIVAR-REBRAND */
     settScrivarAutoUpdate: 'Install updates automatically', /* SCRIVAR-REBRAND */
     settScrivarCheckUpdates: 'Check for updates', /* SCRIVAR-REBRAND */
     actHelpContact: 'Help & contact', /* SCRIVAR-REBRAND */

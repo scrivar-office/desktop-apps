@@ -157,18 +157,18 @@ $(document).ready(function() {
         function render(s) {
             last = s;
             el.root.style.display = 'block';
-            el.version.textContent = 'Version ' + (s.currentVersion || '');
+            el.version.textContent = utils.Lang.updVersion + ' ' + (s.currentVersion || '');
             var chip = '', bar = false, pct = 0;
-            if (s.state === 'checking')          { chip = 'Checking…'; }
-            else if (s.state === 'downloading')  { chip = 'Downloading ' + (s.percent||0) + '%'; bar = true; pct = s.percent||0; }
-            else if (s.canInstall)               { chip = 'Restart to update'; }
-            else if (s.state === 'available')    { chip = 'Update to ' + (s.targetVersion||'') ; }
-            else if (s.state === 'error')        { chip = 'Update failed — retry'; }
+            if (s.state === 'checking')          { chip = utils.Lang.updChecking; }
+            else if (s.state === 'downloading')  { chip = utils.Lang.updDownloading + ' ' + (s.percent||0) + '%'; bar = true; pct = s.percent||0; }
+            else if (s.canInstall)               { chip = utils.Lang.updRestart; }
+            else if (s.state === 'available')    { chip = utils.Lang.updUpdateTo + ' ' + (s.targetVersion||''); }
+            else if (s.state === 'error')        { chip = utils.Lang.updFailed; }
             el.chip.textContent = chip;
             el.chip.style.display = chip ? 'inline-block' : 'none';
             el.bar.style.display = bar ? 'block' : 'none';
             el.fill.style.width = pct + '%';
-            el.root.title = chip || 'Click to check for updates';
+            el.root.title = chip || utils.Lang.settScrivarCheckUpdates;
         }
 
         function poll() {

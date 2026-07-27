@@ -985,12 +985,12 @@
 
     function label(s) {
         if (!s) return '';
-        if (s.state === 'checking') return 'Checking…';
-        if (s.state === 'downloading') return 'Downloading ' + (s.percent || 0) + '%';
-        if (s.canInstall) return 'Ready — restart to update';
-        if (s.state === 'available') return 'Update ' + (s.targetVersion || '') + ' available';
-        if (s.state === 'error') return 'Last check failed';
-        if (s.state === 'none') return 'Up to date';
+        if (s.state === 'checking') return utils.Lang.updChecking;
+        if (s.state === 'downloading') return utils.Lang.updDownloading + ' ' + (s.percent || 0) + '%';
+        if (s.canInstall) return utils.Lang.updRestart;
+        if (s.state === 'available') return utils.Lang.updUpdateTo + ' ' + (s.targetVersion || '');
+        if (s.state === 'error') return utils.Lang.updFailed;
+        if (s.state === 'none') return utils.Lang.updUpToDate;
         return '';
     }
 
@@ -1016,7 +1016,7 @@
                     });
                     link && link.addEventListener('click', function(e) {
                         e.preventDefault();
-                        if (status) status.textContent = 'Checking…';
+                        if (status) status.textContent = utils.Lang.updChecking;
                         fetch(API + '/update/check', {method: 'POST'}).catch(function(){});
                         setTimeout(sync, 600);
                     });
