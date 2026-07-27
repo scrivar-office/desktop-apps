@@ -96,6 +96,8 @@ l10n.en = {
     actActivate: 'Activate',
     actAbout: 'About',
     actSettings: 'Settings',
+    settScrivarAutoUpdate: 'Install updates automatically', /* SCRIVAR-REBRAND */
+    settScrivarCheckUpdates: 'Check for updates', /* SCRIVAR-REBRAND */
     actHelpContact: 'Help & contact', /* SCRIVAR-REBRAND */
     actCloudAI: 'Cloud & AI', /* SCRIVAR-REBRAND */
     actTemplates: 'Templates',

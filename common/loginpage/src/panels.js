@@ -113,12 +113,91 @@ $(document).ready(function() {
                     <span class="text" l10n>${utils.Lang.actAbout}</span>
                   </a>
               </li>
+              <!-- SCRIVAR-REBRAND: update footer (status from the launcher's loopback API) -->
+              <li class="menu-item" id="scrivar-update-foot" style="display:none;margin-top:auto;padding:10px 12px 4px;cursor:pointer;">
+                <div id="scrivar-update-version" style="font-size:11px;color:rgba(255,255,255,.55);line-height:1.5;"></div>
+                <div id="scrivar-update-chip" style="display:none;margin-top:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;"></div>
+                <div id="scrivar-update-bar" style="display:none;margin-top:6px;height:3px;border-radius:2px;background:rgba(255,255,255,.18);overflow:hidden;">
+                  <div id="scrivar-update-bar-fill" style="height:100%;width:0%;background:#fff;transition:width .25s ease;"></div>
+                </div>
+              </li>
             </div>
             <div class="main-column col-center after-left">
             </div>`;
     $('#placeholder').html(_toolmenu_tpl);
 
     $('.tool-menu').on('click', '> .menu-item > a', onActionClick);
+
+    /* SCRIVAR-REBRAND: update footer — render the launcher's update state.
+       The fork holds no update logic: it GETs status from the resident
+       launcher over loopback and POSTs the user's intent back. If the launcher
+       is not up (or this is not a Scrivar build) every call fails and the whole
+       footer stays hidden, so nothing here can break the start page. */
+    (function scrivarUpdateFooter() {
+        var API = 'http://127.0.0.1:41317';
+        var el = {
+            root: document.getElementById('scrivar-update-foot'),
+            version: document.getElementById('scrivar-update-version'),
+            chip: document.getElementById('scrivar-update-chip'),
+            bar: document.getElementById('scrivar-update-bar'),
+            fill: document.getElementById('scrivar-update-bar-fill')
+        };
+        if (!el.root) return;
+        var last = null;
+        var busy = false;
+
+        function post(path, body) {
+            return fetch(API + path, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body || {})
+            }).catch(function(){ return null; });
+        }
+
+        function render(s) {
+            last = s;
+            el.root.style.display = 'block';
+            el.version.textContent = 'Version ' + (s.currentVersion || '');
+            var chip = '', bar = false, pct = 0;
+            if (s.state === 'checking')          { chip = 'Checking…'; }
+            else if (s.state === 'downloading')  { chip = 'Downloading ' + (s.percent||0) + '%'; bar = true; pct = s.percent||0; }
+            else if (s.canInstall)               { chip = 'Restart to update'; }
+            else if (s.state === 'available')    { chip = 'Update to ' + (s.targetVersion||'') ; }
+            else if (s.state === 'error')        { chip = 'Update failed — retry'; }
+            el.chip.textContent = chip;
+            el.chip.style.display = chip ? 'inline-block' : 'none';
+            el.bar.style.display = bar ? 'block' : 'none';
+            el.fill.style.width = pct + '%';
+            el.root.title = chip || 'Click to check for updates';
+        }
+
+        function poll() {
+            fetch(API + '/update/status', {cache: 'no-store'})
+                .then(function(r){ return r.ok ? r.json() : null; })
+                .then(function(s){ if (s && s.ok) render(s); else el.root.style.display = 'none'; })
+                .catch(function(){ el.root.style.display = 'none'; });
+        }
+
+        el.root.addEventListener('click', function() {
+            if (busy || !last) return;
+            busy = true;
+            setTimeout(function(){ busy = false; }, 800);
+            if (last.canInstall) {
+                /* The LAUNCHER asks this app to quit (Apple Event → save
+                   prompts). We only signal intent; if the user cancels a save
+                   prompt nothing installs and the footer stays as it was. */
+                post('/update/restart');
+            } else if (last.state === 'available') {
+                post('/update/download');
+            } else if (last.state !== 'downloading' && last.state !== 'checking') {
+                post('/update/check');
+            }
+            setTimeout(poll, 300);
+        });
+
+        poll();
+        setInterval(poll, 1500);
+    })();
     /* SCRIVAR-REBRAND: Help & contact rail — open the resident launcher's support
        form. window.open on a custom scheme is intercepted by CEF and handed to the
        OS (LaunchServices) → the scrivar-office:// handler (the launcher). No

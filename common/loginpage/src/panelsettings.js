@@ -280,6 +280,17 @@
                                                 <label for="sett-use-ai" class='sett__caption' l10n>${_lang.settUseAI} *</label>
                                             </section>
                                         </div>
+                                        <!-- SCRIVAR-REBRAND: automatic updates (state lives in the launcher) -->
+                                        <div class='settings-field'>
+                                            <section class='switch-labeled hbox' id='scrivar-box-autoupdate'>
+                                                <input type="checkbox" class="checkbox" id="scrivar-autoupdate">
+                                                <label for="scrivar-autoupdate" class='sett__caption'>${_lang.settScrivarAutoUpdate}</label>
+                                            </section>
+                                            <div class='sett--label-lift-top hbox' style='margin-top:6px;'>
+                                                <a class='link link--sizem link--gray' draggable='false' href='#' id='scrivar-check-updates'>${_lang.settScrivarCheckUpdates}</a>
+                                                <span id='scrivar-update-settings-status' style='margin-left:10px;font-size:12px;opacity:.7;'></span>
+                                            </div>
+                                        </div>
                                         <!-- temporary elements section -->
                                         <div class='settings-field' style='display:none;'>
                                             <section class='switch-labeled hbox' id='sett-box-preview-mode'>
@@ -963,3 +974,57 @@
 //     var p = new ControllerSettings({});
 //     p.init();
 // });
+
+
+/* SCRIVAR-REBRAND: automatic-updates row. The preference and every version
+   decision live in the launcher; this only reflects and posts. Polls slowly so
+   the label tracks a download started elsewhere (e.g. the rail footer). */
+(function scrivarUpdateSettings() {
+    var API = 'http://127.0.0.1:41317';
+    var bound = false;
+
+    function label(s) {
+        if (!s) return '';
+        if (s.state === 'checking') return 'Checking…';
+        if (s.state === 'downloading') return 'Downloading ' + (s.percent || 0) + '%';
+        if (s.canInstall) return 'Ready — restart to update';
+        if (s.state === 'available') return 'Update ' + (s.targetVersion || '') + ' available';
+        if (s.state === 'error') return 'Last check failed';
+        if (s.state === 'none') return 'Up to date';
+        return '';
+    }
+
+    function sync() {
+        var box = document.getElementById('scrivar-autoupdate');
+        var status = document.getElementById('scrivar-update-settings-status');
+        var link = document.getElementById('scrivar-check-updates');
+        if (!box) return;
+        fetch(API + '/update/status', {cache: 'no-store'})
+            .then(function(r){ return r.ok ? r.json() : null; })
+            .then(function(s){
+                if (!s || !s.ok) return;
+                if (document.activeElement !== box) box.checked = !!s.autoUpdate;
+                if (status) status.textContent = label(s);
+                if (!bound) {
+                    bound = true;
+                    box.addEventListener('change', function() {
+                        fetch(API + '/update/settings', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({autoUpdate: !!box.checked})
+                        }).catch(function(){});
+                    });
+                    link && link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        if (status) status.textContent = 'Checking…';
+                        fetch(API + '/update/check', {method: 'POST'}).catch(function(){});
+                        setTimeout(sync, 600);
+                    });
+                }
+            })
+            .catch(function(){});
+    }
+
+    setInterval(sync, 2000);
+    sync();
+})();
