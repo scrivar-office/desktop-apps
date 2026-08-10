@@ -50,6 +50,48 @@
 #include "chelp.h"
 #include "common/File.h"
 #include <QStyleFactory>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+
+
+// SCRIVAR-REBRAND: launched-by gate. Port of the mac shell's gate
+// (desktop-apps@c124f2088, macos/ONLYOFFICE/main.mm) — the Windows/Linux shell
+// was never gated, so the suite could be started directly and skip the
+// launcher's licence check entirely.
+//
+// The Scrivar Office launcher (a separate program — argv/env only, no code
+// linkage) starts this suite with --launched-by=scrivar-office-launcher and
+// SCRIVAR_LAUNCHER=1 in the environment. When neither marker is present the
+// binary was opened directly, so point the user at the launcher and exit.
+// The env marker is the one that survives self-relaunches: children inherit
+// the environment, argv is not carried over.
+static bool scrivar_launched_by_launcher(int argc, char *argv[])
+{
+    if ( getenv("SCRIVAR_LAUNCHER") != NULL )
+        return true;
+    for (int i = 1; i < argc; i++) {
+        if ( argv[i] && strncmp(argv[i], "--launched-by=", 14) == 0 )
+            return true;
+    }
+    return false;
+}
+
+static void scrivar_show_launcher_notice()
+{
+#ifdef _WIN32
+    // Win32 MessageBox rather than CMessage/Qt: this gate deliberately runs
+    // before QApplication exists, so constructing a Qt widget here is not safe.
+    MessageBoxW(NULL,
+                L"Open the Scrivar Office app from your Start menu — it checks "
+                L"your licence and starts the editors for you.",
+                L"Please start Scrivar Office normally",
+                MB_OK | MB_ICONINFORMATION);
+#else
+    fprintf(stderr, "Please start Scrivar Office normally — open the Scrivar Office "
+                    "app; it checks your licence and starts the editors for you.\n");
+#endif
+}
 
 
 int main( int argc, char *argv[] )
@@ -124,6 +166,19 @@ int main( int argc, char *argv[] )
         CHelp::out();
         return 0;
     }
+
+    // SCRIVAR-REBRAND: see scrivar_launched_by_launcher above. Placed HERE, not
+    // at the top of main(), on purpose:
+    //   - the Windows installer calls the exe with --assoc to register file
+    //     types; that path already returned above and must never show a dialog
+    //   - --version/--help are harmless introspection and are commonly scripted,
+    //     so they stay usable and must not pop a modal
+    // Everything below this point can start the editors, so it is gated.
+    if ( !scrivar_launched_by_launcher(argc, argv) ) {
+        scrivar_show_launcher_notice();
+        return 0;
+    }
+
     if ( InputArgs::contains(L"--updates-reset") ) {
         GET_REGISTRY_USER(reg_user)
         reg_user.beginGroup("Updates");

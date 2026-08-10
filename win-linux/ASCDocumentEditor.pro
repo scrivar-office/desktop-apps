@@ -24,9 +24,17 @@ DEFINES += APP_ICON_PATH=\"./res/icons/desktopeditors.ico\"
 message($$PLATFORM_BUILD)
 
 #win32 {
+    # SCRIVAR-REBRAND: the suite's built-in updater is DISABLED on purpose.
+    # Updates are owned by the Scrivar Office LAUNCHER (electron-updater against
+    # the Scrivar channel, releases-office/). Leaving _UPDMODULE on would compile
+    # in a SECOND updater that talks to ONLYOFFICE's update service and links to
+    # their download page — two updaters fighting, one of them pointing upstream.
+    # Neutralised here rather than by simply not passing the `updmodule` CONFIG
+    # flag, so it stays off no matter how build_tools invokes qmake.
+    # Do not re-enable — see apps/scrivar-office/CLAUDE.md.
     updmodule:!build_xp {
-        DEFINES += _UPDMODULE
-        message(updates is turned on)
+        # DEFINES += _UPDMODULE
+        message(SCRIVAR: updates module is turned OFF - launcher owns updates)
     }
 #}
 

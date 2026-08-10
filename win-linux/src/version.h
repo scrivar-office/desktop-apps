@@ -68,12 +68,18 @@
 #define VER_LEGALCOPYRIGHT_STR      "© Ascensio System SIA " TO_STR(COPYRIGHT_YEAR) ". All rights reserved.\0"
 #define VER_COMPANYDOMAIN_STR       "www.onlyoffice.com\0"
 #define ABOUT_COPYRIGHT_STR         VER_LEGALCOPYRIGHT_STR
-#define VER_FILEDESCRIPTION_STR     "ONLYOFFICE Desktop Editors\0"
+// SCRIVAR-REBRAND: FileDescription and ProductName are the user-visible fields
+// (Explorer properties, Task Manager) and must not carry the ONLYOFFICE mark —
+// see the trademark rule in apps/scrivar-office/CLAUDE.md. COMPANYNAME,
+// LEGALCOPYRIGHT and COMPANYDOMAIN above are AGPL attribution and stay pointing
+// at Ascensio; INTERNALNAME and ORIGINALFILENAME are build-internal identifiers
+// and are likewise left alone. Publisher identity comes from the EV signature.
+#define VER_FILEDESCRIPTION_STR     "Scrivar Office\0"
 #define VER_INTERNALNAME_STR        "Desktop Editors\0"
 #define VER_LEGALTRADEMARKS1_STR    "All Rights Reserved\0"
 #define VER_LEGALTRADEMARKS2_STR    VER_LEGALTRADEMARKS1_STR
 #define VER_ORIGINALFILENAME_STR    "documenteditor.exe\0"
-#define VER_PRODUCTNAME_STR         "ONLYOFFICE\0"
+#define VER_PRODUCTNAME_STR         "Scrivar Office\0"
 
 #define VER_LANG_AND_CHARSET        "040904E4"
 #define VER_LANG_ID                 0x0409

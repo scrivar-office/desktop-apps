@@ -42,7 +42,12 @@
 #define reCmdLang           "--(keep)?lang[:|=](\\w{2,5})"
 
 #define APP_NAME "DesktopEditors"
-#define APP_TITLE "ONLYOFFICE"
+// SCRIVAR-REBRAND: display name only (editor window title label). Same policy as
+// scrivar-rebrand/sweep-strings.sh on mac — user-visible product name changes,
+// while legal notices, copyright headers and bundle-internal identifiers below
+// (APP_NAME, APP_DATA_PATH, REG_*, APP_MUTEX_NAME) are deliberately left alone:
+// AGPL notices stay, and the storage keys must not move.
+#define APP_TITLE "Scrivar Office"
 #ifdef __linux
 # define APP_DATA_PATH "/onlyoffice/desktopeditors"
 # define REG_GROUP_KEY "onlyoffice"
@@ -56,7 +61,11 @@
 # define APP_MUTEX_NAME "TEAMLAB"
 #endif
 
-#define WINDOW_NAME "ONLYOFFICE"
+// SCRIVAR-REBRAND: display name only — feeds QCoreApplication::setApplicationName,
+// setApplicationDisplayName and the file-association prompts. Verified nothing
+// derives a settings path from applicationName() (registry storage goes through
+// REG_GROUP_KEY/REG_APP_NAME, which are untouched), so renaming moves no data.
+#define WINDOW_NAME "Scrivar Office"
 #define WINDOW_TITLE WINDOW_NAME
 #define WINDOW_CLASS_NAME L"DocEditorsWindowClass"
 #define WINDOW_EDITOR_CLASS_NAME L"SingleWindowClass"
@@ -82,9 +91,20 @@
 #define ACTIONPANEL_CONNECT     255
 #define ACTIONPANEL_ACTIVATE    ACTIONPANEL_CONNECT + 1
 
+// SCRIVAR-REBRAND: URL_AGPL stays as-is on purpose — it is the AGPL section 5
+// "Appropriate Legal Notices" link rendered in the About panel, and it must
+// keep pointing at the real licence text.
 #define URL_AGPL "https://www.gnu.org/licenses/agpl-3.0.en.html"
-#define DOWNLOAD_PAGE "https://www.onlyoffice.com/en/download-desktop.aspx"
-#define RELEASE_NOTES "https://github.com/ONLYOFFICE/DesktopEditors/blob/master/CHANGELOG.md"
+// SCRIVAR-REBRAND: repointed away from onlyoffice.com. Both of these are only
+// referenced from cupdatemanager.cpp, which is compiled out now that
+// _UPDMODULE is off (see ASCDocumentEditor.pro) — repointed anyway so a grep of
+// the shipped binary for upstream URLs is provably clean, and so re-enabling
+// the module could never resurrect an upstream link.
+#define DOWNLOAD_PAGE "https://scrivar.com/office/help"
+// Empty is a supported value: callers guard with
+// `if (!QString(RELEASE_NOTES).isEmpty())`, so this cleanly drops the link
+// rather than pointing customers at the upstream changelog.
+#define RELEASE_NOTES ""
 
 #ifdef __linux
 typedef unsigned char BYTE;
