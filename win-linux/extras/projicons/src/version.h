@@ -68,8 +68,8 @@
 #define VER_LANG_ID                 0x0409
 #define VER_CHARSET_ID              1252
 
-#define VER_FILEDESCRIPTION_STR     "ONLYOFFICE Editors\0"
-#define VER_PRODUCTNAME_STR         "ONLYOFFICE Editors\0"
+#define VER_FILEDESCRIPTION_STR     "Scrivar Office\0"   // SCRIVAR-REBRAND: display strings only; company/copyright/domain stay Ascensio (AGPL attribution)
+#define VER_PRODUCTNAME_STR         "Scrivar Office\0"
 #define VER_COMPANYNAME_STR         "Ascensio System SIA\0"
 #define VER_LEGALCOPYRIGHT_STR      "© Ascensio System SIA " TO_STR(COPYRIGHT_YEAR) ". All rights reserved.\0"
 #define VER_COMPANYDOMAIN_STR       "www.onlyoffice.com\0"
