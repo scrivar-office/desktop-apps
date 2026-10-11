@@ -342,4 +342,200 @@ else:
 PY
 grep -q 'SCRIVAR-SUBSCRIBE' scripts/settings.js || { echo "ERROR: settings.js status row failed"; exit 1; }
 
+# --- 9. Scrivar notices are ERRORS, not answers (2026-10-10, Office 1.0.13) --
+# The launcher proxy now answers every failure (no add-on, signed out,
+# offline, usage limit, server trouble) with an OpenAI-style {"error":{...}}
+# body at HTTP 200 (SSE: a single `data: {"error":...}` event). Upstream's
+# fetch and streaming paths already turn that into a thrown {error,message},
+# so every feature's own error UI shows the real text with Insert disabled —
+# before, the notice came back as a normal completion and Summarization/
+# Translation offered to INSERT it into the document. This section:
+#   a. engine.js: the AscSimpleRequest (local, non-streamed) path ignored
+#      body errors and replaced HTTP errors with "Internal error" — honour both.
+#   b. register.js + chat.js: chat shows the notice inline (with an "Open
+#      Cloud & AI" button) instead of an editor error toast + "Error: [provider]".
+#   c. chat.js: the Subscribe banner lives above the conversation (it used to
+#      sit inside the empty-state and vanished after the first message) and
+#      refreshes after every reply.
+#   d. settings.js + register.js + code.js: Scrivar AI is text-only — hide the
+#      Image generation / OCR / Vision rows and their dead menu/toolbar entries.
+python3 - <<'PY'
+import re
+def patch(path, marker, pairs):
+    s = open(path).read()
+    if marker in s:
+        print(path + ': ' + marker + ' already applied'); return
+    for old, new in pairs:
+        if old not in s:
+            raise SystemExit('ERROR: %s anchor not found: %r' % (path, old[:70]))
+        s = s.replace(old, new, 1)
+    open(path, 'w').write(s)
+    print(path + ': ' + marker + ' applied')
+
+# a. engine.js
+patch('scripts/engine/engine.js', 'SCRIVAR-NOTICE', [
+("""					complete: function(e, status) {
+						let data = JSON.parse(e.responseText);
+						resolve({error: 0, data: data.data ? data.data : data});
+					},
+					error: function(e, status, error) {
+						if ( e.statusCode == -102 ) e.statusCode = 404;
+						resolve({error: e.statusCode, message: "Internal error"});
+					}""",
+"""					complete: function(e, status) {
+						let data = JSON.parse(e.responseText);
+						// SCRIVAR-NOTICE: an {"error":{...}} body is an error, not a completion.
+						if (data && data.error) {
+							resolve({error: 1, message: data.error.message ? data.error.message : ((typeof data.error === "string") ? data.error : "")});
+							return;
+						}
+						resolve({error: 0, data: data.data ? data.data : data});
+					},
+					error: function(e, status, error) {
+						if ( e.statusCode == -102 ) e.statusCode = 404;
+						// SCRIVAR-NOTICE: surface the server's message when it sent one.
+						let message = "Internal error";
+						try {
+							let body = JSON.parse(e.responseText);
+							if (body && body.error && body.error.message)
+								message = body.error.message;
+						} catch (err) {
+						}
+						resolve({error: e.statusCode, message: message});
+					}"""),
+])
+
+# b + d. register.js
+patch('scripts/engine/register.js', 'SCRIVAR-NOTICE', [
+("""			let requestEngine = AI.Request.create(AI.ActionType.Chat);
+			if (!requestEngine)
+				return;
+""",
+"""			let requestEngine = AI.Request.create(AI.ActionType.Chat);
+			if (!requestEngine)
+				return;
+
+			// SCRIVAR-NOTICE: show request errors (no add-on, offline, limits)
+			// inline in the chat instead of an editor toast + "Error: [provider]".
+			let scrivarNotice = false;
+			requestEngine.setErrorHandler(function(err) {
+				scrivarNotice = true;
+				chatWindow.command("onChatNotice", (err && err.message) ? err.message : "");
+			});
+"""),
+("""				if (!fullResponse)
+					fullResponse = { content : Asc.plugin.tr("Error:") + " [provider]" };
+""",
+"""				if (!fullResponse && scrivarNotice)
+					break;
+				if (!fullResponse)
+					fullResponse = { content : Asc.plugin.tr("Error:") + " [provider]" };
+"""),
+("""	if (true)
+	{
+		let buttonImages = new Asc.ButtonContextMenu(buttonMain);""",
+"""	if (false) // SCRIVAR-LOCK: Scrivar AI is text-only (no image generation / OCR / vision)
+	{
+		let buttonImages = new Asc.ButtonContextMenu(buttonMain);"""),
+])
+
+# d. code.js — PDF "OCR" toolbar button
+patch('scripts/code.js', 'SCRIVAR-TEXT-ONLY', [
+("""		if (Asc.Editor.getType() === "pdf") {
+			window.Asc.plugin.attachEditorEvent("onChangeRestrictions", function(value){""",
+"""		if (false && Asc.Editor.getType() === "pdf") { // SCRIVAR-TEXT-ONLY: no OCR model in Scrivar AI
+			window.Asc.plugin.attachEditorEvent("onChangeRestrictions", function(value){"""),
+])
+
+# d. settings.js — only the text actions Scrivar AI serves
+patch('scripts/settings.js', 'SCRIVAR-TEXT-ONLY', [
+("""		actionsList = list;""",
+"""		// SCRIVAR-TEXT-ONLY: Scrivar AI serves text actions only; hide the
+		// Image generation / OCR / Vision rows (they could never get a model).
+		actionsList = (list || []).filter(function(a) {
+			return ['Chat', 'Summarization', 'Translation', 'TextAnalyze'].indexOf(a.id) !== -1;
+		});"""),
+])
+
+# b + c. chat.js
+s = open('scripts/chat.js').read()
+if 'SCRIVAR-NOTICE' in s:
+    print('scripts/chat.js: SCRIVAR-NOTICE already applied')
+else:
+    start = s.index("\t\t// SCRIVAR-SUBSCRIBE:")
+    end = s.index("\t\t} catch (e) {}\n", start) + len("\t\t} catch (e) {}\n")
+    cta = """		// SCRIVAR-SUBSCRIBE / SCRIVAR-NOTICE: a Subscribe banner pinned ABOVE the
+		// conversation (outside the scrolling list, so it never scrolls away),
+		// shown while Cloud & AI is not active and re-checked after every reply.
+		// State from the resident launcher /status; the button opens the
+		// launcher manage window (AGPL: no account/token logic in the fork).
+		window.scrivarRefreshCta = function() {
+			try {
+				fetch('http://127.0.0.1:41317/status').then(function(r){ return r.json(); }).then(function(st){
+					var existing = document.getElementById('scrivar-subscribe-cta');
+					if (st && st.subscribed) {
+						if (existing) existing.remove();
+						return;
+					}
+					if (existing) return;
+					var win = document.getElementById('chat_window');
+					var wrapper = document.getElementById('chat_wrapper');
+					if (!win || !wrapper) return;
+					var cta = document.createElement('div');
+					cta.id = 'scrivar-subscribe-cta';
+					cta.style.cssText = 'margin:0 0 8px 0;padding:10px 12px;border:1px solid var(--border-Regular,#e0e0e0);border-radius:8px;text-align:center;flex-shrink:0;';
+					var msg = document.createElement('div');
+					msg.style.cssText = 'font-size:13px;margin-bottom:8px;';
+					msg.textContent = window.Asc.plugin.tr('Cloud & AI is not active. Subscribe to use AI features.');
+					var btn = document.createElement('button');
+					btn.className = 'form-control btn-text-default';
+					btn.textContent = window.Asc.plugin.tr('Subscribe to Cloud & AI');
+					btn.addEventListener('click', function(){ window.open('scrivar-office://manage'); });
+					cta.appendChild(msg); cta.appendChild(btn);
+					win.insertBefore(cta, wrapper);
+				}).catch(function(){});
+			} catch (e) {}
+		};
+		window.scrivarRefreshCta();
+"""
+    s = s[:start] + cta + s[end:]
+    # inline notice rendering
+    old_err = "\t\t\t\tif(item.error) {\n\t\t\t\t\tconst errorObj = errorsMap[item.error];"
+    if old_err not in s:
+        raise SystemExit('ERROR: chat.js error-render anchor not found')
+    s = s.replace(old_err, """				if(item.error === 'scrivar_notice') {
+					// SCRIVAR-NOTICE: launcher notice (no add-on, offline, limits) —
+					// readable text + a way to Cloud & AI, and no insert/copy actions.
+					const $notice = $('<div class="message_content_error_desc"></div>');
+					$notice.text(item.content[0] || '');
+					const $open = $('<button class="form-control btn-text-default" style="margin-top:8px;"></button>');
+					$open.text(window.Asc.plugin.tr('Open Cloud & AI'));
+					$open.on('click', function() { window.open('scrivar-office://manage'); });
+					$messageContent.append($notice);
+					$messageContent.append($open);
+				} else if(item.error) {
+					const errorObj = errorsMap[item.error];""", 1)
+    old_reply = '\twindow.Asc.plugin.attachEvent("onChatReply", function(reply) {'
+    if old_reply not in s:
+        raise SystemExit('ERROR: chat.js onChatReply anchor not found')
+    s = s.replace(old_reply, """	// SCRIVAR-NOTICE: request errors arrive here instead of as a reply.
+	window.Asc.plugin.attachEvent("onChatNotice", function(message) {
+		messagesList.add({ role: 'assistant', content: [message || window.Asc.plugin.tr('Something went wrong')], error: 'scrivar_notice' });
+		removeTyping();
+		finishAgentExecution();
+		window.scrivarRefreshCta && window.scrivarRefreshCta();
+	});
+
+""" + old_reply, 1)
+    # refresh the banner after every normal reply too
+    old_tail = "\t\tmessagesList.add({ role: 'assistant', content: [reply], error: errorCode });\n"
+    if old_tail not in s:
+        raise SystemExit('ERROR: chat.js reply-add anchor not found')
+    s = s.replace(old_tail, old_tail + "\t\twindow.scrivarRefreshCta && window.scrivarRefreshCta();\n", 1)
+    open('scripts/chat.js', 'w').write(s)
+    print('scripts/chat.js: SCRIVAR-NOTICE applied')
+PY
+for f in scripts/engine/engine.js scripts/engine/register.js scripts/chat.js; do grep -q SCRIVAR-NOTICE "$f" || { echo "ERROR: $f notice patch failed"; exit 1; }; done
+for f in scripts/code.js scripts/settings.js; do grep -q SCRIVAR-TEXT-ONLY "$f" || { echo "ERROR: $f text-only patch failed"; exit 1; }; done
+
 echo "patch-ai-plugin done."
