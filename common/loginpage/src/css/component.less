@@ -659,6 +659,52 @@ input[type="radio"] {
     
 }
 
+// SCRIVAR-TILES begin (v1.0.14): the create row fits the window instead of
+// scrolling sideways — see scrivar-rebrand/fit-create-tiles.sh.
+.document-creation-grid {
+    gap: clamp(12px, 2vw, 32px);
+}
+
+.document-creation-item {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 112px;
+    max-width: 172px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    padding: 24px 8px 16px;
+
+    .icon {
+        width: 100%;
+        max-width: 108px;
+        height: auto;
+        aspect-ratio: 108 / 100;
+    }
+}
+
+// Narrow windows (the main window can shrink to 518pt): four tiles can't
+// share one row, so lay them out 2x2 and let the strip grow vertically
+// (upstream's overflow-y:hidden + fixed min-height would clip the 2nd row).
+@media (max-width: 840px) {
+    // `html` prefix: styles.less compiles AFTER this file and sets the
+    // same ID's overflow-y/min-height, so equal specificity would lose.
+    html #area-document-creation-grid {
+        overflow-y: visible;
+        min-height: 0;
+    }
+
+    .document-creation-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(112px, 150px));
+        justify-content: start;
+    }
+
+    .document-creation-item {
+        max-width: none;
+    }
+}
+// SCRIVAR-TILES end
+
 /**/
 .margin-left(@value) {
     margin-left: @value;

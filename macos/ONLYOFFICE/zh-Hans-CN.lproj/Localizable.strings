@@ -235,3 +235,9 @@
 /* No comment provided by engineer. */
 "Your subscription is about to expire\n(%d days left).\n\nWe have a special offer for you." = "您的訂閱即將到期\n(剩下 %d 天)。\n\n我們為您提供一項特別優惠。";
 
+/* SCRIVAR-QUIT: quit-with-unsaved-documents dialog (scrivar-rebrand/fix-quit-dialog.sh) */
+"Quit Without Saving" = "不保存并退出";
+"You have a document with unsaved changes. Do you want to review it before quitting?" = "有 1 个文档包含未保存的更改。是否要在退出前检查？";
+"You have %ld documents with unsaved changes. Do you want to review them before quitting?" = "有 %ld 个文档包含未保存的更改。是否要在退出前检查？";
+"If you don't review your changes, they will be lost." = "如果不检查更改，这些更改将会丢失。";
+"Review Changes…" = "检查更改…";

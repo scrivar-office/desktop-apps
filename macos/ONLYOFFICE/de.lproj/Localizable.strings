@@ -235,3 +235,9 @@
 /* No comment provided by engineer. */
 "Your subscription is about to expire\n(%d days left).\n\nWe have a special offer for you." = "Ihr Abo läuft aus\n(noch %d Tage gültig).\n\nWir haben ein Sonderangebot für Sie.";
 
+/* SCRIVAR-QUIT: quit-with-unsaved-documents dialog (scrivar-rebrand/fix-quit-dialog.sh) */
+"Quit Without Saving" = "Ohne Sichern beenden";
+"You have a document with unsaved changes. Do you want to review it before quitting?" = "Sie haben ein Dokument mit ungesicherten Änderungen. Möchten Sie es vor dem Beenden überprüfen?";
+"You have %ld documents with unsaved changes. Do you want to review them before quitting?" = "Sie haben %ld Dokumente mit ungesicherten Änderungen. Möchten Sie sie vor dem Beenden überprüfen?";
+"If you don't review your changes, they will be lost." = "Wenn Sie Ihre Änderungen nicht überprüfen, gehen sie verloren.";
+"Review Changes…" = "Änderungen überprüfen…";

@@ -232,3 +232,9 @@
 /* No comment provided by engineer. */
 "Your subscription is about to expire\n(%d days left).\n\nWe have a special offer for you." = "お客様のサブスクリプションの有効期限が迫っています\n(残り %d 日)。\n\nスペシャル優待をご用意しています。";
 
+/* SCRIVAR-QUIT: quit-with-unsaved-documents dialog (scrivar-rebrand/fix-quit-dialog.sh) */
+"Quit Without Saving" = "保存せずに終了";
+"You have a document with unsaved changes. Do you want to review it before quitting?" = "保存されていない変更がある書類が 1 つあります。終了する前に確認しますか？";
+"You have %ld documents with unsaved changes. Do you want to review them before quitting?" = "保存されていない変更がある書類が %ld 個あります。終了する前に確認しますか？";
+"If you don't review your changes, they will be lost." = "変更を確認しない場合、変更内容は失われます。";
+"Review Changes…" = "変更内容を確認…";

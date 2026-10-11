@@ -473,11 +473,14 @@
         NSString * productName = [ASCHelper appName];
         
         NSAlert *alert = [[NSAlert alloc] init];
-        [alert addButtonWithTitle:NSLocalizedString(@"Review Changes...", nil)];
+        [alert addButtonWithTitle:NSLocalizedString(@"Review Changes…", nil)];
         [[alert addButtonWithTitle:NSLocalizedString(@"Cancel", nil)] setKeyEquivalent:@"\e"];
-        [alert addButtonWithTitle:NSLocalizedString(@"Delete and Quit", nil)];
-        [alert setMessageText:[NSString stringWithFormat:NSLocalizedString(@"You have %ld %@ documents with unconfirmed changes. Do you want to review these changes before quitting?", nil), (long)unsaved, productName]];
-        [alert setInformativeText:NSLocalizedString(@"If you don't review your documents, all your changeses will be lost.", nil)];
+        [alert addButtonWithTitle:NSLocalizedString(@"Quit Without Saving", nil) /* SCRIVAR-QUIT */];
+        (void)productName; /* SCRIVAR-QUIT */
+        [alert setMessageText:(unsaved == 1
+            ? NSLocalizedString(@"You have a document with unsaved changes. Do you want to review it before quitting?", nil)
+            : [NSString stringWithFormat:NSLocalizedString(@"You have %ld documents with unsaved changes. Do you want to review them before quitting?", nil), (long)unsaved])];
+        [alert setInformativeText:NSLocalizedString(@"If you don't review your changes, they will be lost.", nil)];
         [alert setAlertStyle:NSAlertStyleInformational];
         
         NSInteger result = [alert runModal];
@@ -935,11 +938,14 @@
                     NSString * productName = [ASCHelper appName];
                     
                     NSAlert *alert = [[NSAlert alloc] init];
-                    [alert addButtonWithTitle:NSLocalizedString(@"Review Changes...", nil)];
+                    [alert addButtonWithTitle:NSLocalizedString(@"Review Changes…", nil)];
                     [[alert addButtonWithTitle:NSLocalizedString(@"Cancel", nil)] setKeyEquivalent:@"\e"];
-                    [alert addButtonWithTitle:NSLocalizedString(@"Delete and Quit", nil)];
-                    [alert setMessageText:[NSString stringWithFormat:NSLocalizedString(@"You have %ld %@ documents with unconfirmed changes. Do you want to review these changes before quitting?", nil), (long)unsaved, productName]];
-                    [alert setInformativeText:NSLocalizedString(@"If you don't review your documents, all your changeses will be lost.", nil)];
+                    [alert addButtonWithTitle:NSLocalizedString(@"Quit Without Saving", nil) /* SCRIVAR-QUIT */];
+                    (void)productName; /* SCRIVAR-QUIT */
+                    [alert setMessageText:(unsaved == 1
+                        ? NSLocalizedString(@"You have a document with unsaved changes. Do you want to review it before quitting?", nil)
+                        : [NSString stringWithFormat:NSLocalizedString(@"You have %ld documents with unsaved changes. Do you want to review them before quitting?", nil), (long)unsaved])];
+                    [alert setInformativeText:NSLocalizedString(@"If you don't review your changes, they will be lost.", nil)];
                     [alert setAlertStyle:NSAlertStyleInformational];
                     
                     NSInteger result = [alert runModal];
